@@ -1,0 +1,185 @@
+
+DATA SHAPE
+(973, 15)
+
+FIRST 5 ROWS
+   Age  Gender  ...  Experience_Level    BMI
+0   52    Male  ...                 3  36.74
+1   47  Female  ...                 1  38.65
+2   37    Male  ...                 3  20.04
+3   44  Female  ...                 3  48.55
+4   58    Male  ...                 3  17.61
+
+[5 rows x 15 columns]
+
+INFO
+<class 'pandas.DataFrame'>
+RangeIndex: 973 entries, 0 to 972
+Data columns (total 15 columns):
+ #   Column                         Non-Null Count  Dtype  
+---  ------                         --------------  -----  
+ 0   Age                            973 non-null    int64  
+ 1   Gender                         973 non-null    str    
+ 2   Weight (kg)                    973 non-null    float64
+ 3   Height (m)                     973 non-null    float64
+ 4   Max_BPM                        973 non-null    int64  
+ 5   Avg_BPM                        973 non-null    int64  
+ 6   Resting_BPM                    973 non-null    int64  
+ 7   Session_Duration (hours)       973 non-null    float64
+ 8   Calories_Burned                973 non-null    int64  
+ 9   Workout_Type                   973 non-null    str    
+ 10  Fat_Percentage                 973 non-null    float64
+ 11  Water_Intake (liters)          973 non-null    float64
+ 12  Workout_Frequency (days/week)  973 non-null    int64  
+ 13  Experience_Level               973 non-null    int64  
+ 14  BMI                            973 non-null    float64
+dtypes: float64(6), int64(7), str(2)
+memory usage: 114.2 KB
+None
+
+MISSING VALUES
+Age                              0
+Gender                           0
+Weight (kg)                      0
+Height (m)                       0
+Max_BPM                          0
+Avg_BPM                          0
+Resting_BPM                      0
+Session_Duration (hours)         0
+Calories_Burned                  0
+Workout_Type                     0
+Fat_Percentage                   0
+Water_Intake (liters)            0
+Workout_Frequency (days/week)    0
+Experience_Level                 0
+BMI                              0
+dtype: int64
+
+DESCRIPTIVE STATISTICS
+              Age  Weight (kg)  ...  Experience_Level         BMI
+count  973.000000   973.000000  ...        973.000000  973.000000
+mean    38.341213    85.340699  ...          1.971223   28.440442
+std     12.343369    26.113724  ...          0.819762    9.983470
+min     18.000000    40.200000  ...          1.000000   10.530000
+25%     28.000000    63.400000  ...          1.000000   20.040000
+50%     38.000000    84.700000  ...          2.000000   27.550000
+75%     49.000000   108.700000  ...          3.000000   35.450000
+max     59.000000   129.900000  ...          3.000000   55.660000
+
+[8 rows x 13 columns]
+
+DATA TYPES AFTER PREPROCESSING
+Age                                int64
+Gender                             int64
+Weight (kg)                      float64
+Height (m)                       float64
+Max_BPM                            int64
+Avg_BPM                            int64
+Resting_BPM                        int64
+Session_Duration (hours)         float64
+Calories_Burned                    int64
+Fat_Percentage                   float64
+Water_Intake (liters)            float64
+Workout_Frequency (days/week)      int64
+Experience_Level                   int64
+Workout_Type_HIIT                  int64
+Workout_Type_Strength              int64
+Workout_Type_Yoga                  int64
+dtype: object
+
+CORRELATION WITH TARGET
+Calories_Burned                  1.000000
+Session_Duration (hours)         0.968938
+Experience_Level                 0.053779
+Resting_BPM                      0.039615
+Water_Intake (liters)            0.021548
+Workout_Type_Yoga                0.019012
+Max_BPM                          0.017325
+Workout_Type_Strength            0.005468
+Gender                           0.002274
+Weight (kg)                     -0.001824
+Fat_Percentage                  -0.006009
+Workout_Type_HIIT               -0.026928
+Age                             -0.032036
+Workout_Frequency (days/week)   -0.044871
+Height (m)                      -0.052968
+Avg_BPM                         -0.062963
+Name: Calories_Burned, dtype: float64
+
+VIF TABLE
+                         Variable       VIF
+14          Workout_Type_Strength  1.558591
+15              Workout_Type_Yoga  1.543784
+13              Workout_Type_HIIT  1.513646
+4                      Height (m)  1.021566
+5                         Max_BPM  1.021426
+6                         Avg_BPM  1.021067
+12               Experience_Level  1.020534
+10          Water_Intake (liters)  1.016621
+7                     Resting_BPM  1.016204
+8        Session_Duration (hours)  1.016070
+11  Workout_Frequency (days/week)  1.013702
+1                             Age  1.012998
+9                  Fat_Percentage  1.012376
+2                          Gender  1.008810
+3                     Weight (kg)  1.005965
+0                           const  1.000000
+
+MLR RESULTS
+RMSE = 82.32559874842583
+MAE = 66.05915026156076
+R2 = 0.9369859225995958
+Adjusted R2 = 0.9317054133202323
+
+COEFFICIENT TABLE
+                         Variable  Coefficient
+7        Session_Duration (hours)   302.669450
+4                         Max_BPM    -4.573578
+1                          Gender     3.493469
+13          Workout_Type_Strength     3.398868
+0                             Age    -3.351865
+5                         Avg_BPM    -3.097650
+14              Workout_Type_Yoga     2.954323
+9           Water_Intake (liters)    -2.736074
+2                     Weight (kg)     2.482316
+12              Workout_Type_HIIT     2.229807
+6                     Resting_BPM    -1.870106
+3                      Height (m)     1.015256
+11               Experience_Level    -0.543047
+8                  Fat_Percentage    -0.442235
+10  Workout_Frequency (days/week)    -0.122110
+
+SHAPIRO-WILK TEST
+W = 0.9923002322874195
+p-value = 0.3943745636581665
+
+DEGREE SELECTION
+   Degree   Mean RMSE         SD
+0       1   78.599309   2.309412
+1       2   86.250245   3.678683
+2       3  274.609540  11.615998
+
+POLYNOMIAL RESULTS
+RMSE = 89.6943559274565
+MAE = 71.42847146228286
+R2 = 0.9252006166735252
+Adjusted R2 = 0.7540494853332861
+
+CROSS VALIDATION RESULTS
+   Fold   MLR_RMSE    PR_RMSE
+0     1  77.263023  85.772562
+1     2  82.819621  92.195269
+2     3  76.719767  83.540107
+3     4  79.328541  88.107854
+4     5  76.865592  81.635434
+
+PAIRED T TEST
+T Statistic = -9.152577794597978
+P Value = 0.0007910098539309889
+
+FINAL MODEL COMPARISON
+        Metric        MLR  Polynomial
+0         RMSE  82.325599   89.694356
+1          MAE  66.059150   71.428471
+2           R2   0.936986    0.925201
+3  Adjusted R2   0.931705    0.754049

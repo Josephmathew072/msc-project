@@ -1,0 +1,211 @@
+
+DATA SHAPE
+[1] 973  15
+
+FIRST 5 ROWS
+  Age Gender Weight (kg) Height (m) Max_BPM Avg_BPM Resting_BPM
+1  52   Male        86.1       1.53     168     156          69
+2  47 Female       125.5       1.80     181     147          59
+3  37   Male        53.0       1.63     160     122          63
+4  44 Female       125.4       1.61     198     163          70
+5  58   Male        68.1       1.97     186     139          70
+  Session_Duration (hours) Calories_Burned Workout_Type Fat_Percentage
+1                     1.51            1010         HIIT           10.6
+2                     1.68            1071       Cardio           26.9
+3                     0.56             286         HIIT           12.6
+4                     1.83            1382         Yoga           33.0
+5                     1.73            1162         Yoga           11.9
+  Water_Intake (liters) Workout_Frequency (days/week) Experience_Level   BMI
+1                   2.4                             2                3 36.74
+2                   3.3                             5                1 38.65
+3                   2.7                             4                3 20.04
+4                   2.8                             4                3 48.55
+5                   3.0                             5                3 17.61
+
+INFO
+'data.frame':	973 obs. of  15 variables:
+ $ Age                          : int  52 47 37 44 58 43 42 41 19 50 ...
+ $ Gender                       : chr  "Male" "Female" "Male" "Female" ...
+ $ Weight (kg)                  : num  86.1 125.5 53 125.4 68.1 ...
+ $ Height (m)                   : num  1.53 1.8 1.63 1.61 1.97 1.81 1.72 1.53 1.69 1.93 ...
+ $ Max_BPM                      : int  168 181 160 198 186 178 197 171 182 182 ...
+ $ Avg_BPM                      : int  156 147 122 163 139 122 154 162 147 126 ...
+ $ Resting_BPM                  : int  69 59 63 70 70 64 52 57 55 72 ...
+ $ Session_Duration (hours)     : num  1.51 1.68 0.56 1.83 1.73 0.56 1.32 0.54 1.22 0.62 ...
+ $ Calories_Burned              : num  1010 1071 286 1382 1162 ...
+ $ Workout_Type                 : chr  "HIIT" "Cardio" "HIIT" "Yoga" ...
+ $ Fat_Percentage               : num  10.6 26.9 12.6 33 11.9 23.5 28.1 33.8 23.9 12.3 ...
+ $ Water_Intake (liters)        : num  2.4 3.3 2.7 2.8 3 2.2 2.5 2.2 2.4 2.5 ...
+ $ Workout_Frequency (days/week): int  2 5 4 4 5 3 2 2 2 4 ...
+ $ Experience_Level             : int  3 1 3 3 3 1 2 1 1 3 ...
+ $ BMI                          : num  36.7 38.6 20 48.5 17.6 ...
+
+MISSING VALUES
+                          Age                        Gender 
+                            0                             0 
+                  Weight (kg)                    Height (m) 
+                            0                             0 
+                      Max_BPM                       Avg_BPM 
+                            0                             0 
+                  Resting_BPM      Session_Duration (hours) 
+                            0                             0 
+              Calories_Burned                  Workout_Type 
+                            0                             0 
+               Fat_Percentage         Water_Intake (liters) 
+                            0                             0 
+Workout_Frequency (days/week)              Experience_Level 
+                            0                             0 
+                          BMI 
+                            0 
+
+DESCRIPTIVE STATISTICS
+            Age Weight (kg)  Height (m)   Max_BPM   Avg_BPM Resting_BPM
+count 973.00000   973.00000 973.0000000 973.00000 973.00000  973.000000
+mean   38.34121    85.34070   1.7492497 179.85920 144.69887   62.158273
+std    12.34337    26.11372   0.1419534  11.64971  14.05137    7.270043
+min    18.00000    40.20000   1.5000000 160.00000 120.00000   50.000000
+25%    28.00000    63.40000   1.6200000 170.00000 133.00000   56.000000
+50%    38.00000    84.70000   1.7500000 180.00000 145.00000   62.000000
+75%    49.00000   108.70000   1.8700000 190.00000 157.00000   69.000000
+max    59.00000   129.90000   2.0000000 199.00000 169.00000   74.000000
+      Session_Duration (hours) Calories_Burned Fat_Percentage
+count              973.0000000        973.0000      973.00000
+mean                 1.2234224        860.7924       22.58016
+std                  0.4363128        315.9570        7.26238
+min                  0.5000000        134.0000       10.00000
+25%                  0.8400000        579.0000       16.40000
+50%                  1.2200000        854.0000       22.70000
+75%                  1.6100000       1131.0000       28.60000
+max                  1.9900000       1492.0000       34.90000
+      Water_Intake (liters) Workout_Frequency (days/week) Experience_Level
+count           973.0000000                    973.000000      973.0000000
+mean              2.6057554                      3.499486        1.9712230
+std               0.6314036                      1.147214        0.8197625
+min               1.5000000                      2.000000        1.0000000
+25%               2.1000000                      2.000000        1.0000000
+50%               2.6000000                      3.000000        2.0000000
+75%               3.1000000                      5.000000        3.0000000
+max               3.7000000                      5.000000        3.0000000
+            BMI
+count 973.00000
+mean   28.44044
+std     9.98347
+min    10.53000
+25%    20.04000
+50%    27.55000
+75%    35.45000
+max    55.66000
+
+DATA TYPES AFTER PREPROCESSING
+                          Age                        Gender 
+                    "integer"                     "integer" 
+                  Weight (kg)                    Height (m) 
+                    "numeric"                     "numeric" 
+                      Max_BPM                       Avg_BPM 
+                    "integer"                     "integer" 
+                  Resting_BPM      Session_Duration (hours) 
+                    "integer"                     "numeric" 
+              Calories_Burned                Fat_Percentage 
+                    "numeric"                     "numeric" 
+        Water_Intake (liters) Workout_Frequency (days/week) 
+                    "numeric"                     "integer" 
+             Experience_Level             Workout_Type_HIIT 
+                    "integer"                     "integer" 
+        Workout_Type_Strength             Workout_Type_Yoga 
+                    "integer"                     "integer" 
+
+CORRELATION WITH TARGET
+              Calories_Burned      Session_Duration (hours) 
+                  1.000000000                   0.968938168 
+             Experience_Level                   Resting_BPM 
+                  0.053778703                   0.039615176 
+        Water_Intake (liters)             Workout_Type_Yoga 
+                  0.021547894                   0.019012333 
+                      Max_BPM         Workout_Type_Strength 
+                  0.017325316                   0.005468476 
+                       Gender                   Weight (kg) 
+                  0.002273511                  -0.001824347 
+               Fat_Percentage             Workout_Type_HIIT 
+                 -0.006008743                  -0.026928049 
+                          Age Workout_Frequency (days/week) 
+                 -0.032036218                  -0.044871283 
+                   Height (m)                       Avg_BPM 
+                 -0.052967850                  -0.062962611 
+
+VIF TABLE
+                        Variable        VIF
+1                          const 642.922027
+15         Workout_Type_Strength   1.558591
+16             Workout_Type_Yoga   1.543784
+14             Workout_Type_HIIT   1.513646
+5                     Height (m)   1.021566
+6                        Max_BPM   1.021426
+7                        Avg_BPM   1.021067
+13              Experience_Level   1.020534
+11         Water_Intake (liters)   1.016621
+8                    Resting_BPM   1.016204
+9       Session_Duration (hours)   1.016070
+12 Workout_Frequency (days/week)   1.013702
+2                            Age   1.012998
+10                Fat_Percentage   1.012376
+3                         Gender   1.008810
+4                    Weight (kg)   1.005965
+
+MLR RESULTS
+RMSE = 82.32559874842585 
+MAE = 66.05915026156077 
+R2 = 0.9369859225995958 
+Adjusted R2 = 0.9317054133202323 
+
+COEFFICIENT TABLE
+                        Variable Coefficient
+8       Session_Duration (hours) 302.6694504
+5                        Max_BPM  -4.5735777
+2                         Gender   3.4934691
+14         Workout_Type_Strength   3.3988685
+1                            Age  -3.3518647
+6                        Avg_BPM  -3.0976496
+15             Workout_Type_Yoga   2.9543234
+10         Water_Intake (liters)  -2.7360738
+3                    Weight (kg)   2.4823156
+13             Workout_Type_HIIT   2.2298069
+7                    Resting_BPM  -1.8701058
+4                     Height (m)   1.0152561
+12              Experience_Level  -0.5430472
+9                 Fat_Percentage  -0.4422350
+11 Workout_Frequency (days/week)  -0.1221096
+
+SHAPIRO-WILK TEST
+W = 0.9923002320732902 
+p-value = 0.3943745390642399 
+
+DEGREE SELECTION
+  Degree          Mean RMSE                 SD
+1      1  78.59930887299799  2.309412266738321
+2      2  86.25024515748660  3.678682585527855
+3      3 274.60953978758903 11.615997803008478
+
+POLYNOMIAL RESULTS
+RMSE = 89.69435592745653 
+MAE = 71.42847146228289 
+R2 = 0.925200616673525 
+Adjusted R2 = 0.7540494853332858 
+
+CROSS VALIDATION RESULTS
+  Fold          MLR_RMSE           PR_RMSE
+1    1 77.26302295608683 85.77256218291538
+2    2 82.81962127390648 92.19526859925877
+3    3 76.71976748600962 83.54010697825247
+4    4 79.32854050111099 88.10785413484783
+5    5 76.86559214787604 81.63543389215860
+
+PAIRED T TEST
+T Statistic = -9.152577794598113 
+P Value = 0.0007910098539309439 
+
+FINAL MODEL COMPARISON
+       Metric                 MLR          Polynomial
+1        RMSE 82.3255987484258469 89.6943559274565274
+2         MAE 66.0591502615607737 71.4284714622828858
+3          R2  0.9369859225995958  0.9252006166735250
+4 Adjusted R2  0.9317054133202323  0.7540494853332858
