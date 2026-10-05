@@ -1,0 +1,630 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=1.1in,bottom=1.1in,left=1.15in,right=1.0in]{geometry}
+\usepackage{graphicx,booktabs,amsmath,amssymb,float,caption,subcaption,xcolor,listings,eso-pic,titlesec,setspace,enumitem,array}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- page border (as in the template) ----------
+\AddToShipoutPictureBG{%
+  \AtPageLowerLeft{%
+    \setlength{\unitlength}{1mm}%
+    \put(20,22){\framebox(170,257){}}%
+  }%
+}
+
+% ---------- chapter headings: "Chapter N" / Title ----------
+\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{14pt}{\huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{24pt}
+\setstretch{1.25}
+\captionsetup{font=normalsize,labelsep=colon}
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\thechapter.\arabic{table}}
+
+% ---------- black code boxes ----------
+\definecolor{codebg}{RGB}{0,0,0}
+\definecolor{codestr}{RGB}{240,220,40}
+\definecolor{codekw}{RGB}{90,170,255}
+\lstdefinestyle{code}{
+  backgroundcolor=\color{codebg}, basicstyle=\ttfamily\footnotesize\color{white},
+  stringstyle=\color{codestr}, keywordstyle=\color{codekw}, commentstyle=\color{gray!70},
+  language=Python, columns=fullflexible, keepspaces=true, showstringspaces=false,
+  breaklines=true, frame=none, xleftmargin=0pt, framexleftmargin=0pt,
+  aboveskip=8pt, belowskip=8pt, upquote=true}
+\lstdefinestyle{out}{
+  backgroundcolor=\color{codebg}, basicstyle=\ttfamily\fontsize{7}{8.5}\selectfont\color{white},
+  columns=fixed, keepspaces=true, breaklines=false, frame=none, language={},
+  aboveskip=6pt, belowskip=8pt}
+\lstnewenvironment{code}{\lstset{style=code}}{}
+\lstnewenvironment{out}{\lstset{style=out}}{}
+
+\newcommand{\fig}[3]{\begin{figure}[H]\centering\includegraphics[width=#2\textwidth]{#1}\caption{#3}\end{figure}}
+
+\begin{document}
+\sloppy
+
+% ======================= COVER =======================
+\begin{titlepage}
+\centering\setstretch{1.1}
+\vspace*{-0.3cm}
+{\Large\bfseries EVALUATING THE PREDICTIVE ACCURACY OF MULTIPLE LINEAR AND POLYNOMIAL REGRESSION MODELS IN ESTIMATING ACTIVE CALORIC EXPENDITURE\par}
+\vspace{0.4cm}
+{\large\bfseries A PROJECT REPORT\par}
+\vspace{0.7cm}
+{\itshape Submitted to\par}
+\vspace{0.3cm}
+{\large\bfseries MAHATMA GANDHI UNIVERSITY, KOTTAYAM\par}
+\vspace{0.4cm}
+{\itshape In partial fulfilment of the requirements for the degree of\par}
+\vspace{0.3cm}
+{\large\bfseries MASTER OF SCIENCE IN STATISTICS (APPLIED)\par}
+\vspace{0.4cm}
+{\itshape By\par}
+\vspace{0.2cm}
+{\large\bfseries\color{blue!65} ANEESHA K ANIL\par}
+{\small (Reg. No: 240011019042)\par}
+\vspace{0.5cm}
+{\itshape Under the guidance of\par}
+\vspace{0.2cm}
+{\large\bfseries\color{blue!65} Dr. SMITHA S\par}
+{Associate Professor\par}
+\vspace{0.5cm}
+\includegraphics[width=0.17\textwidth]{logo_11.png}\par
+\vspace{0.7cm}
+{\large\bfseries DEPARTMENT OF STATISTICS\par}
+{\large\bfseries KURIAKOSE ELIAS COLLEGE, MANNANAM\par}
+{\small KOTTAYAM, KERALA\par}
+\vspace{0.4cm}
+{\large\bfseries JUNE 2026\par}
+\end{titlepage}
+
+% ======================= ABSTRACT =======================
+\setcounter{page}{1}
+\section*{Abstract}
+Accurate estimation of active caloric expenditure is essential for weight management, exercise prescription and wearable fitness technology. This study compares the predictive accuracy of Multiple Linear Regression (MLR) and Polynomial Regression (PR) for estimating the calories burned in an exercise session, using the Gym Members Exercise Tracking dataset (973 sessions, 15 predictors after encoding). The data were split 80/20 into training and test sets and the predictors were standardised. The polynomial degree was selected by five-fold cross-validation, and the second-degree model gave the lowest error (mean RMSE 28.95 kcal against 40.11 for degree 1 and 107.61 for degree 3). On the test set, Polynomial Regression reduced the RMSE from 40.81 to 24.61 kcal and the MAE from 30.39 to 19.44 kcal, and increased $R^2$ from 0.9800 to 0.9927. Before comparing the models with a paired $t$-test, the normality of the paired fold-wise RMSE differences was checked with the Shapiro--Wilk test ($W = 0.874$, $p = 0.282$), and normality was not rejected. The paired $t$-test showed that Polynomial Regression had a significantly lower prediction error (mean difference 11.15 kcal, 95\% CI 7.76--14.55; $t(4) = 9.13$, $p = 0.0008$). Session duration was the most influential predictor. The results show that modelling curvature and interactions improves the estimation of active caloric expenditure.
+
+\vspace{0.3cm}
+\noindent\textbf{Keywords:} caloric expenditure, multiple linear regression, polynomial regression, cross-validation, Shapiro--Wilk test, paired $t$-test
+
+% ======================= CH 1 =======================
+\chapter{Introduction}
+The increasing use of wearable fitness devices and health monitoring applications has generated large volumes of exercise-related data, including heart rate, workout duration and body composition. Among the indicators used in fitness assessment, active caloric expenditure is one of the most important because it represents the energy expended during physical activity. Accurate estimation of caloric expenditure is essential for weight management, exercise prescription, athletic performance monitoring and overall health improvement.
+
+Regression analysis is one of the most widely used statistical techniques for predictive modelling. Multiple Linear Regression (MLR) is commonly used because of its simplicity and interpretability, but it assumes a linear and additive relationship between the response and the predictors. In fitness data, the relationship between physiological variables and caloric expenditure can be nonlinear; for example, the effect of session duration may depend on exercise intensity.
+
+Polynomial Regression (PR) extends linear regression by adding squared and interaction terms of the predictors, allowing curved relationships and interactions to be captured. It may therefore give better predictive accuracy, but the additional terms increase the risk of overfitting, so the model complexity must be selected carefully.
+
+In this project, Multiple Linear Regression and Polynomial Regression are developed and compared for estimating active caloric expenditure. The study performs exploratory data analysis, multicollinearity assessment, model development, cross-validation and hypothesis testing. The difference in predictive accuracy is tested with a paired $t$-test, after verifying the normality of the paired differences.
+
+\section{Objectives of the Study}
+\begin{enumerate}[itemsep=2pt]
+\item To examine the characteristics of the fitness dataset through exploratory data analysis.
+\item To pre-process the dataset by performing data cleaning, feature encoding and variable selection.
+\item To develop Multiple Linear Regression and Polynomial Regression models for predicting active caloric expenditure.
+\item To select the optimal polynomial degree using five-fold cross-validation.
+\item To assess model performance using RMSE, MAE, $R^2$ and Adjusted $R^2$.
+\item To check the normality of the paired differences and test whether the difference in predictive accuracy is statistically significant using a paired $t$-test.
+\end{enumerate}
+
+\section{Research Hypotheses}
+\textbf{Null Hypothesis ($H_0$):} There is no significant difference in predictive accuracy between Multiple Linear Regression and Polynomial Regression models.
+
+\noindent\textbf{Alternative Hypothesis ($H_1$):} There is a significant difference in predictive accuracy between Multiple Linear Regression and Polynomial Regression models.
+
+% ======================= CH 2 =======================
+\chapter{Dataset Description}
+\section{Dataset Source}
+In this study the Gym Members Exercise Tracking Dataset is used, which is a publicly available dataset. The dataset contains information about gym members' demographic characteristics, physiological measurements, exercise habits and caloric expenditure.
+
+The dataset is available through the Kaggle repository.
+
+\noindent Dataset Name: Gym Members Exercise Tracking Dataset
+
+\noindent File Name: gym\_members\_exercise\_tracking.xlsx
+
+\noindent Target Variable: Calories\_Burned (kcal)
+
+This dataset provides 973 observations and 15 variables, and each observation corresponds to one workout session. The dataset contains no missing values and no duplicate records. It includes 511 male and 462 female members and four workout types: Strength (258), Cardio (255), Yoga (239) and HIIT (221).
+
+\section{Description of Variables}
+\begin{table}[H]
+\centering\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Variable} & \textbf{Description} & \textbf{Type}\\
+\midrule
+Age & Age of the participant (years) & Numerical\\
+Gender & Gender of the participant & Categorical\\
+Weight (kg) & Body weight in kilograms & Numerical\\
+Height (m) & Height in metres & Numerical\\
+Max\_BPM & Maximum heart rate during exercise & Numerical\\
+Avg\_BPM & Average heart rate during exercise & Numerical\\
+Resting\_BPM & Resting heart rate & Numerical\\
+Session\_Duration (hours) & Duration of workout session & Numerical\\
+Calories\_Burned & Calories expended during exercise & Target\\
+Workout\_Type & Cardio, HIIT, Strength, Yoga & Categorical\\
+Fat\_Percentage & Body fat percentage & Numerical\\
+Water\_Intake (liters) & Daily water intake & Numerical\\
+Workout\_Frequency (days/week) & Weekly workout frequency & Numerical\\
+Experience\_Level & Fitness experience level (1--3) & Numerical\\
+BMI & Body Mass Index & Numerical\\
+\bottomrule
+\end{tabular}
+\caption{Description of variables used in the study}
+\end{table}
+
+% ======================= CH 3 =======================
+\chapter{Exploratory Data Analysis}
+Exploratory Data Analysis (EDA) is an important step that involves examining and summarising the main characteristics of a dataset. Its purpose is to understand the structure of the data, identify data quality issues, detect patterns and explore relationships between variables before applying statistical models.
+
+\section{Descriptive Statistics}
+\subsection{Shape of the data}
+\begin{code}
+df = pd.read_excel("gym_members_exercise_tracking.xlsx")
+df.shape
+output:
+    (973, 15)
+\end{code}
+The dataset contains:
+\begin{itemize}[itemsep=0pt]
+\item Number of observations (sessions): 973
+\item Number of variables (features): 15
+\end{itemize}
+
+\subsection{Information about data}
+\begin{code}
+df.info()
+\end{code}
+output:
+\begin{out}
+RangeIndex: 973 entries, 0 to 972
+Data columns (total 15 columns):
+ #   Column                         Non-Null Count  Dtype
+---  ------                         --------------  -----
+ 0   Age                            973 non-null    int64
+ 1   Gender                         973 non-null    object
+ 2   Weight (kg)                    973 non-null    float64
+ 3   Height (m)                     973 non-null    float64
+ 4   Max_BPM                        973 non-null    int64
+ 5   Avg_BPM                        973 non-null    int64
+ 6   Resting_BPM                    973 non-null    int64
+ 7   Session_Duration (hours)       973 non-null    float64
+ 8   Calories_Burned                973 non-null    int64
+ 9   Workout_Type                   973 non-null    object
+ 10  Fat_Percentage                 973 non-null    float64
+ 11  Water_Intake (liters)          973 non-null    float64
+ 12  Workout_Frequency (days/week)  973 non-null    int64
+ 13  Experience_Level               973 non-null    int64
+ 14  BMI                            973 non-null    float64
+dtypes: float64(6), int64(7), object(2)
+\end{out}
+
+\subsection{Describe the data}
+\begin{code}
+df.describe()
+\end{code}
+output:
+\begin{out}
+                           count    mean     std     min     25%     50%      75%      max
+Age                        973.0   38.68   12.18   18.00   28.00   40.00    49.00    59.00
+Weight (kg)                973.0   73.85   21.21   40.00   58.10   70.00    86.00   129.90
+Height (m)                 973.0    1.72    0.13    1.50    1.62    1.71     1.80     2.00
+Max_BPM                    973.0  179.88   11.53  160.00  170.00  180.00   190.00   199.00
+Avg_BPM                    973.0  143.77   14.35  120.00  131.00  143.00   156.00   169.00
+Resting_BPM                973.0   62.22    7.33   50.00   56.00   62.00    68.00    74.00
+Session_Duration (hours)   973.0    1.26    0.34    0.50    1.04    1.26     1.46     2.00
+Calories_Burned            973.0  905.42  272.64  303.00  720.00  893.00  1076.00  1783.00
+Fat_Percentage             973.0   24.98    6.26   10.00   21.30   26.20    29.30    35.00
+Water_Intake (liters)      973.0    2.63    0.60    1.50    2.20    2.60     3.10     3.70
+Workout_Frequency          973.0    3.32    0.91    2.00    3.00    3.00     4.00     5.00
+Experience_Level           973.0    1.81    0.74    1.00    1.00    2.00     2.00     3.00
+BMI                        973.0   24.91    6.66   12.32   20.11   24.16    28.56    49.84
+\end{out}
+The average caloric expenditure was 905.42 kcal per session (SD 272.64), and the average session duration was 1.26 hours.
+
+\subsection{Finding null values}
+\begin{code}
+df.isnull().sum()
+\end{code}
+All 15 variables have 0 missing values, so no imputation or deletion was required.
+
+\subsection{Pre-processing}
+\begin{code}
+if 'BMI' in df.columns:
+    df.drop('BMI', axis=1, inplace=True)
+df['Gender'] = (df['Gender'] == 'Male').astype(int)
+df = pd.get_dummies(df, columns=['Workout_Type'], drop_first=True, dtype=int)
+\end{code}
+BMI was removed because it is calculated directly from weight and height ($\text{BMI} = \text{Weight}/\text{Height}^2$) and would introduce redundancy. Gender was coded as Male $=1$, Female $=0$. Workout\_Type was dummy-coded with Cardio as the reference category, creating Workout\_Type\_HIIT, Workout\_Type\_Strength and Workout\_Type\_Yoga. After pre-processing, 15 predictor variables remained.
+
+\section{Distribution Analysis}
+\begin{code}
+plt.hist(df['Calories_Burned'], bins=30)
+\end{code}
+\fig{fig1_hist.png}{0.78}{Distribution of calories burned}
+The distribution of calories burned is approximately symmetric and unimodal, with most sessions between 600 and 1200 kcal.
+
+\fig{fig2_scatter.png}{0.78}{Session duration versus calories burned}
+The scatter plot shows a strong positive linear relationship between session duration and calories burned.
+
+\section{Correlation Analysis}
+\begin{code}
+corr = df.corr(numeric_only=True)
+sns.heatmap(corr, annot=True, cmap='coolwarm', fmt='.2f')
+\end{code}
+\fig{fig3_heatmap.png}{0.98}{Correlation heatmap (WT = Workout\_Type)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Variable} & \textbf{Correlation with Calories\_Burned}\\
+\midrule
+Session\_Duration (hours) & 0.908\\
+Experience\_Level & 0.694\\
+Workout\_Frequency (days/week) & 0.576\\
+Water\_Intake (liters) & 0.357\\
+Avg\_BPM & 0.340\\
+Gender & 0.151\\
+Weight (kg) & 0.095\\
+Height (m) & 0.086\\
+Workout\_Type\_HIIT & 0.041\\
+Resting\_BPM & 0.017\\
+Workout\_Type\_Strength & 0.012\\
+Max\_BPM & 0.002\\
+Workout\_Type\_Yoga & $-0.005$\\
+Age & $-0.155$\\
+Fat\_Percentage & $-0.598$\\
+\bottomrule
+\end{tabular}
+\caption{Correlation of variables with calories burned}
+\end{table}
+The strongest positive correlation was observed between Session\_Duration and Calories\_Burned ($r = 0.908$), indicating that longer workout sessions are associated with greater caloric expenditure. Experience\_Level ($r = 0.694$) and Workout\_Frequency ($r = 0.576$) also showed strong positive correlations. Fat\_Percentage showed a strong negative correlation ($r = -0.598$), suggesting that individuals with higher body fat percentage tend to burn fewer calories. Experience\_Level was also highly correlated with Workout\_Frequency ($r = 0.84$) and Session\_Duration ($r = 0.76$).
+
+% ======================= CH 4 =======================
+\chapter{Statistical Methods}
+\section{Multicollinearity Assessment Using VIF}
+The Variance Inflation Factor of predictor $j$ is
+\[ \text{VIF}_j = \frac{1}{1 - R_j^2}, \]
+where $R_j^2$ is the coefficient of determination obtained by regressing predictor $j$ on all other predictors. VIF $< 5$ is acceptable, $5 \le$ VIF $< 10$ indicates moderate multicollinearity and VIF $\ge 10$ indicates high multicollinearity.
+
+\section{Multiple Linear Regression}
+The Multiple Linear Regression model is
+\[ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p + \varepsilon, \]
+where $Y$ is Calories\_Burned, $\beta_0$ is the intercept, $\beta_1,\dots,\beta_p$ are the regression coefficients, $X_1,\dots,X_p$ are the predictors and $\varepsilon$ is the random error.
+
+\section{Polynomial Regression}
+The second-degree polynomial regression model adds all squared and pairwise interaction terms:
+\[ Y = \beta_0 + \sum_{j=1}^{p}\beta_j X_j + \sum_{j=1}^{p}\sum_{k=j}^{p}\beta_{jk} X_j X_k + \varepsilon. \]
+With $p = 15$ predictors, the model has 135 terms (15 linear, 15 squared and 105 interaction terms). The squares of the binary predictors and the products of the mutually exclusive workout-type dummies duplicate other columns, so the design matrix has rank 127; the model was fitted by least squares using the minimum-norm solution. Polynomial degrees 1, 2 and 3 were compared, and the degree with the lowest cross-validated RMSE was selected.
+
+\section{Model Evaluation Metrics}
+\[ \text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat y_i)^2}, \qquad \text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i-\hat y_i| \]
+\[ R^2 = 1 - \frac{SS_{res}}{SS_{tot}}, \qquad \text{Adjusted } R^2 = 1 - \frac{(1-R^2)(n-1)}{n-p-1} \]
+where $n$ is the number of observations and $p$ is the number of predictor terms. Lower RMSE and MAE and higher $R^2$ indicate better predictive performance.
+
+\section{Train--Test Split and Cross-Validation}
+\begin{code}
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+scaler = StandardScaler()
+X_train_sc = scaler.fit_transform(X_train)
+X_test_sc = scaler.transform(X_test)
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+\end{code}
+The data were split into a training set (778 observations, 80\%) and a test set (195 observations, 20\%). The predictors were standardised using the training-set mean and standard deviation. Five-fold cross-validation was performed on the training set, using the same folds for both models, so that each model produced one RMSE per fold.
+
+\section{Normality of Paired Differences}
+The paired $t$-test assumes that the paired differences follow a normal distribution. For each fold $k$, the paired difference is
+\[ d_k = \text{RMSE}_k^{\text{MLR}} - \text{RMSE}_k^{\text{PR}}, \qquad k = 1,\dots,5. \]
+The normality of the $d_k$ was tested with the Shapiro--Wilk test:
+
+\noindent $H_0$: The paired differences are normally distributed.\\
+$H_1$: The paired differences are not normally distributed.
+
+\noindent If $p > 0.05$, normality is not rejected and the paired $t$-test can be applied. A normal Q--Q plot of the differences was also examined, and the Wilcoxon signed-rank test was used as a distribution-free check.
+
+\section{Paired $t$-Test}
+\[ t = \frac{\bar d}{s_d/\sqrt{K}}, \qquad df = K - 1 = 4, \]
+where $\bar d$ and $s_d$ are the mean and standard deviation of the $K = 5$ paired differences. The 95\% confidence interval of the mean difference, $\bar d \pm t_{0.025,4}\, s_d/\sqrt{K}$, and the effect size $d_z = \bar d/s_d$ were also computed. A significance level of 5\% ($\alpha = 0.05$) was used throughout the study.
+
+% ======================= CH 5 =======================
+\chapter{Multiple Linear Regression}
+\section{VIF Analysis}
+\begin{code}
+X_vif = sm.add_constant(X)
+vif_df["VIF"] = [variance_inflation_factor(X_vif.values, i) for i in range(X_vif.shape[1])]
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Variable} & \textbf{VIF}\\
+\midrule
+Experience\_Level & 5.41\\
+Workout\_Frequency (days/week) & 3.38\\
+Gender & 3.15\\
+Fat\_Percentage & 2.76\\
+Session\_Duration (hours) & 2.56\\
+Water\_Intake (liters) & 2.37\\
+Weight (kg) & 1.53\\
+Height (m) & 1.53\\
+Workout\_Type\_Strength & 1.50\\
+Workout\_Type\_Yoga & 1.48\\
+Workout\_Type\_HIIT & 1.45\\
+Age & 1.02\\
+Max\_BPM & 1.02\\
+Resting\_BPM & 1.01\\
+Avg\_BPM & 1.01\\
+\bottomrule
+\end{tabular}
+\caption{Variance Inflation Factor (VIF) results}
+\end{table}
+All VIF values were below 10, indicating the absence of severe multicollinearity. Only Experience\_Level exceeded 5 (VIF = 5.41), showing moderate multicollinearity due to its correlation with workout frequency and session duration. Therefore, no predictor was removed.
+
+\section{Model Results}
+\begin{code}
+mlr = LinearRegression()
+mlr.fit(X_train_sc, y_train)
+y_pred_mlr = mlr.predict(X_test_sc)
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value}\\
+\midrule
+RMSE & 40.81\\
+MAE & 30.39\\
+$R^2$ & 0.9800\\
+Adjusted $R^2$ & 0.9784\\
+\bottomrule
+\end{tabular}
+\caption{Multiple Linear Regression performance metrics (test set)}
+\end{table}
+The model explained approximately 98\% of the variation in caloric expenditure, with an average prediction error of about 41 kcal.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Variable} & \textbf{Coefficient}\\
+\midrule
+Session\_Duration (hours) & 240.0037\\
+Avg\_BPM & 88.6352\\
+Gender & 42.2212\\
+Age & $-40.1311$\\
+Resting\_BPM & 4.4357\\
+Fat\_Percentage & $-3.8551$\\
+Workout\_Type\_Yoga & $-3.6869$\\
+Workout\_Frequency (days/week) & 3.6798\\
+Experience\_Level & $-2.4995$\\
+Water\_Intake (liters) & $-2.1617$\\
+Workout\_Type\_HIIT & $-1.9755$\\
+Weight (kg) & 1.6745\\
+Workout\_Type\_Strength & $-1.5319$\\
+Height (m) & 1.4198\\
+Max\_BPM & 1.2704\\
+\bottomrule
+\end{tabular}
+\caption{Multiple Linear Regression coefficients (standardised predictors)}
+\end{table}
+Session\_Duration was the most influential predictor: an increase of one standard deviation in session duration increases the predicted calories burned by about 240 kcal, holding other variables constant. Average heart rate, gender and age were the next most important predictors.
+
+\section{Residual Analysis}
+\fig{fig4_residuals.png}{1.0}{MLR residuals: (a) residuals versus predicted values, (b) normal Q--Q plot}
+\begin{code}
+w_stat, p_shapiro = stats.shapiro(residuals_mlr)
+output:
+    W = 0.9826   p-value = 0.0164
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value}\\
+\midrule
+W Statistic & 0.983\\
+p-value & 0.016\\
+\bottomrule
+\end{tabular}
+\caption{Shapiro--Wilk test of MLR residuals (test set, $n = 195$)}
+\end{table}
+Since the $p$-value is less than 0.05, the residuals deviate slightly from normality, and the residual plot shows some curvature. This indicates a nonlinear pattern that the linear model does not capture, which motivates the use of Polynomial Regression.
+
+% ======================= CH 6 =======================
+\chapter{Polynomial Regression}
+\section{Degree Selection}
+\begin{code}
+for degree in [1, 2, 3]:
+    poly = PolynomialFeatures(degree=degree, include_bias=False)
+    X_poly = poly.fit_transform(X_train_sc)
+    cv_rmse = np.sqrt(-cross_val_score(LinearRegression(), X_poly, y_train,
+                      cv=kf, scoring='neg_mean_squared_error'))
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{cccc}
+\toprule
+\textbf{Degree} & \textbf{Number of Terms} & \textbf{Mean RMSE} & \textbf{Standard Deviation}\\
+\midrule
+1 & 15 & 40.11 & 3.05\\
+2 & 135 & 28.95 & 1.37\\
+3 & 815 & 107.61 & 9.09\\
+\bottomrule
+\end{tabular}
+\caption{Polynomial degree selection results (five-fold cross-validation)}
+\end{table}
+\fig{fig5_degree.png}{0.7}{Polynomial degree selection}
+The second-degree polynomial model achieved the lowest prediction error and was therefore selected as the optimal model. The third-degree model, with 815 terms for about 622 training rows per fold, overfitted and produced a much larger error.
+
+\section{Model Results}
+\begin{code}
+poly = PolynomialFeatures(degree=2, include_bias=False)
+X_train_poly = poly.fit_transform(X_train_sc)
+X_test_poly = poly.transform(X_test_sc)
+pr = LinearRegression().fit(X_train_poly, y_train)
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value}\\
+\midrule
+RMSE & 24.61\\
+MAE & 19.44\\
+$R^2$ & 0.9927\\
+Adjusted $R^2$ & 0.9761\\
+\bottomrule
+\end{tabular}
+\caption{Polynomial Regression performance metrics (test set)}
+\end{table}
+Polynomial Regression explained 99.27\% of the variation in caloric expenditure and produced substantially lower prediction errors than Multiple Linear Regression.
+
+% ======================= CH 7 =======================
+\chapter{Model Comparison}
+\section{Comparison of Performance Metrics}
+\begin{table}[H]
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Multiple Linear Regression} & \textbf{Polynomial Regression}\\
+\midrule
+RMSE & 40.81 & 24.61\\
+MAE & 30.39 & 19.44\\
+$R^2$ & 0.9800 & 0.9927\\
+Adjusted $R^2$ & 0.9784 & 0.9761\\
+\bottomrule
+\end{tabular}
+\caption{Comparison of performance metrics (test set, $n = 195$)}
+\end{table}
+\fig{fig6_actual_pred.png}{1.0}{Actual versus predicted calories burned: (a) MLR, (b) Polynomial Regression}
+Polynomial Regression reduced the RMSE by 39.7\% and the MAE by 36.0\%, and its predictions lie closer to the line of perfect prediction. The Adjusted $R^2$ of Polynomial Regression is slightly lower because it heavily penalises the 135 terms relative to the 195 test observations; RMSE and MAE are the more relevant measures of predictive accuracy.
+
+\section{Comparison of Cross-Validation Results}
+\begin{code}
+rmse_mlr_folds = np.sqrt(-cross_val_score(LinearRegression(), X_train_sc, y_train,
+                         cv=kf, scoring='neg_mean_squared_error'))
+rmse_pr_folds = np.sqrt(-cross_val_score(LinearRegression(), X_train_poly, y_train,
+                        cv=kf, scoring='neg_mean_squared_error'))
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{cccc}
+\toprule
+\textbf{Fold} & \textbf{MLR RMSE} & \textbf{Polynomial RMSE} & \textbf{Difference ($d_k$)}\\
+\midrule
+1 & 37.89 & 29.48 & 8.41\\
+2 & 42.89 & 28.61 & 14.28\\
+3 & 35.17 & 26.71 & 8.46\\
+4 & 42.10 & 30.93 & 11.17\\
+5 & 42.48 & 29.03 & 13.46\\
+\midrule
+Mean & 40.11 & 28.95 & 11.15\\
+\bottomrule
+\end{tabular}
+\caption{Cross-validation results and paired differences}
+\end{table}
+\fig{fig7_folds.png}{0.68}{Fold-wise RMSE of MLR and Polynomial Regression}
+Polynomial Regression produced a lower RMSE than Multiple Linear Regression in all five folds, with differences ranging from 8.41 to 14.28 kcal.
+
+\section{Normality of Paired Differences}
+\begin{code}
+diff_folds = rmse_mlr_folds - rmse_pr_folds
+w_diff, p_diff = stats.shapiro(diff_folds)
+output:
+    Differences = [ 8.4064  14.2792  8.4604  11.1668  13.4557]
+    W = 0.8738   p-value = 0.2824
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value}\\
+\midrule
+Number of differences & 5\\
+Shapiro--Wilk W & 0.874\\
+p-value & 0.282\\
+Decision ($\alpha = 0.05$) & Normality not rejected\\
+\bottomrule
+\end{tabular}
+\caption{Shapiro--Wilk test for normality of paired differences}
+\end{table}
+\fig{fig8_qq_diff.png}{0.55}{Normal Q--Q plot of the paired differences}
+Since the $p$-value (0.282) is greater than 0.05, the null hypothesis of normality is not rejected. The points in the Q--Q plot lie close to the reference line, and all five differences lie within $\pm 1.15$ standard deviations of their mean, so there are no outliers. Hence the assumption of the paired $t$-test is satisfied.
+
+\section{Paired $t$-Test}
+\begin{code}
+t_stat, p_value = stats.ttest_rel(rmse_mlr_folds, rmse_pr_folds)
+output:
+    T Statistic = 9.1268   P Value = 0.0008
+    Mean Difference = 11.1537   95% CI = (7.7607, 14.5468)   Effect Size d_z = 4.0816
+\end{code}
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value}\\
+\midrule
+Mean difference (kcal) & 11.15\\
+Standard deviation of differences & 2.73\\
+$t$ statistic ($df = 4$) & 9.13\\
+$p$-value & 0.0008\\
+95\% CI of mean difference & (7.76, 14.55)\\
+Effect size $d_z$ & 4.08\\
+\bottomrule
+\end{tabular}
+\caption{Paired $t$-test results}
+\end{table}
+The $p$-value (0.0008) is less than 0.05; therefore, the null hypothesis is rejected. Polynomial Regression has a significantly lower prediction error than Multiple Linear Regression, with an average improvement of 11.15 kcal per fold. The confidence interval does not contain zero, and the effect size is very large.
+
+As a distribution-free check, the Wilcoxon signed-rank test gave $W = 0$ and $p = 0.0625$. Polynomial Regression was better in all five folds, which is the most extreme result possible; with only five pairs, 0.0625 is the smallest $p$-value this test can produce. Since normality of the differences was not rejected, the paired $t$-test is the appropriate test.
+
+% ======================= CH 8 =======================
+\chapter{Results and Discussion}
+\section{Statistical Model Results}
+\subsection{Exploratory Data Analysis Results}
+The exploratory analysis showed that caloric expenditure is approximately symmetrically distributed and is most strongly related to session duration ($r = 0.908$), experience level, workout frequency and fat percentage. Exercise behaviour variables had a greater influence on caloric expenditure than demographic variables.
+
+\subsection{Multiple Linear Regression Results}
+The MLR model achieved an $R^2$ of 0.9800 and an RMSE of 40.81 kcal. Session duration was the most influential predictor, followed by average heart rate. The curvature in the residuals and their slight departure from normality ($p = 0.016$) indicated that the relationship is not entirely linear.
+
+\subsection{Polynomial Regression Results}
+The second-degree Polynomial Regression model achieved an RMSE of 24.61 kcal, an MAE of 19.44 kcal and an $R^2$ of 0.9927. The squared and interaction terms allow the model to capture combined effects, such as the joint effect of session duration and heart rate, which a linear model cannot represent. The third-degree model overfitted, showing that a moderate level of complexity is optimal for this dataset.
+
+\section{Model Comparison Results}
+Polynomial Regression produced lower RMSE and MAE, higher $R^2$ and lower cross-validation error in every fold. The paired differences satisfied the normality assumption (Shapiro--Wilk $p = 0.282$), and the paired $t$-test confirmed that the improvement is statistically significant ($t(4) = 9.13$, $p = 0.0008$). The improvement achieved by Polynomial Regression is therefore not due to random variation.
+
+\section{Limitations of the Study}
+\begin{itemize}[itemsep=2pt]
+\item The analysis was based on a single public dataset, so the findings may depend on the characteristics of this dataset.
+\item The paired $t$-test was based on only five folds, and the Shapiro--Wilk test has low power for such a small sample. Repeated cross-validation would give a more robust comparison.
+\item The 135-term polynomial model is less interpretable than Multiple Linear Regression.
+\item Only Multiple Linear Regression and Polynomial Regression were compared; regularised and machine learning models were not considered.
+\end{itemize}
+
+% ======================= CH 9 =======================
+\chapter{Conclusion and Future Scope}
+This study compared Multiple Linear Regression and Polynomial Regression models for estimating active caloric expenditure using the Gym Members Exercise Tracking dataset. Exploratory data analysis showed that session duration was the strongest predictor of calories burned. Both models performed well, but the second-degree Polynomial Regression model reduced the test RMSE from 40.81 to 24.61 kcal and the MAE from 30.39 to 19.44 kcal, and increased $R^2$ from 0.9800 to 0.9927. Polynomial Regression also produced lower error in all five cross-validation folds.
+
+The normality of the paired differences was verified with the Shapiro--Wilk test ($W = 0.874$, $p = 0.282$), so the paired $t$-test was appropriate. The paired $t$-test confirmed a statistically significant improvement of 11.15 kcal ($t(4) = 9.13$, $p = 0.0008$). Therefore, Polynomial Regression is recommended as the preferred model for predicting active caloric expenditure within the context of this dataset.
+
+Future work may include validating the models on larger and more diverse datasets, using repeated cross-validation, and comparing Polynomial Regression with regularised regression (ridge and lasso) and machine learning models such as Random Forest, Gradient Boosting and Neural Networks. Additional physiological variables, such as oxygen consumption and metabolic rate, could further improve prediction accuracy.
+
+% ======================= BIBLIOGRAPHY =======================
+\begin{thebibliography}{99}
+\bibitem{ainsworth} Ainsworth, B. E., Haskell, W. L., Herrmann, S. D., Meckes, N., Bassett, D. R., Tudor-Locke, C., Greer, J. L., Vezina, J., Whitt-Glover, M. C., \& Leon, A. S. (2011). 2011 Compendium of physical activities: A second update of codes and MET values. \textit{Medicine \& Science in Sports \& Exercise, 43}(8), 1575--1581.
+\bibitem{draper} Draper, N. R., \& Smith, H. (1998). \textit{Applied Regression Analysis} (3rd ed.). John Wiley \& Sons.
+\bibitem{field} Field, A. (2018). \textit{Discovering Statistics Using IBM SPSS Statistics} (5th ed.). Sage Publications.
+\bibitem{hair} Hair, J. F., Black, W. C., Babin, B. J., \& Anderson, R. E. (2019). \textit{Multivariate Data Analysis} (8th ed.). Cengage Learning.
+\bibitem{james} James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2021). \textit{An Introduction to Statistical Learning: With Applications in R} (2nd ed.). Springer.
+\bibitem{kutner} Kutner, M. H., Nachtsheim, C. J., Neter, J., \& Li, W. (2005). \textit{Applied Linear Statistical Models} (5th ed.). McGraw-Hill.
+\bibitem{montgomery} Montgomery, D. C., Peck, E. A., \& Vining, G. G. (2021). \textit{Introduction to Linear Regression Analysis} (6th ed.). John Wiley \& Sons.
+\bibitem{nadeau} Nadeau, C., \& Bengio, Y. (2003). Inference for the generalization error. \textit{Machine Learning, 52}(3), 239--281.
+\bibitem{pedhazur} Pedhazur, E. J. (1997). \textit{Multiple Regression in Behavioral Research: Explanation and Prediction} (3rd ed.). Harcourt Brace.
+\bibitem{seber} Seber, G. A. F., \& Lee, A. J. (2012). \textit{Linear Regression Analysis} (2nd ed.). John Wiley \& Sons.
+\bibitem{shapiro} Shapiro, S. S., \& Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). \textit{Biometrika, 52}(3--4), 591--611.
+\bibitem{weisberg} Weisberg, S. (2014). \textit{Applied Linear Regression} (4th ed.). John Wiley \& Sons.
+\end{thebibliography}
+
+\end{document}
