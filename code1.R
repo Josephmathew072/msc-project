@@ -506,6 +506,34 @@ cat("\nCROSS VALIDATION RESULTS\n")
 print(cv_results, digits = 16)
 
 # ================================
+# NORMALITY OF PAIRED DIFFERENCES
+# (assumption of the paired t-test)
+# ================================
+
+diff_folds <- rmse_mlr_folds - rmse_pr_folds
+
+sw_diff <- shapiro.test(diff_folds)
+
+cat("\nNORMALITY OF PAIRED DIFFERENCES (SHAPIRO-WILK)\n")
+print(diff_folds)
+pyprint("W =", unname(sw_diff$statistic))
+pyprint("p-value =", sw_diff$p.value)
+
+local({
+  theo <- qnorm(seq_along(diff_folds) / (length(diff_folds) + 1))
+  plot(theo, sort(diff_folds), xlab = "Theoretical Quantiles",
+       ylab = "Paired Difference (MLR - PR RMSE)",
+       main = "Q-Q Plot of Paired Differences")
+  abline(mean(diff_folds), sd(diff_folds), col = "red")
+})
+
+# Distribution-free check: exact Wilcoxon signed-rank test
+wx <- suppressWarnings(wilcox.test(rmse_mlr_folds, rmse_pr_folds, paired = TRUE))
+cat("\nWILCOXON SIGNED-RANK TEST\n")
+pyprint("V =", unname(wx$statistic))
+pyprint("p-value =", wx$p.value)
+
+# ================================
 # PAIRED T TEST
 # ================================
 
@@ -516,6 +544,8 @@ p_value <- tt$p.value
 cat("\nPAIRED T TEST\n")
 pyprint("T Statistic =", t_stat)
 pyprint("P Value =", p_value)
+cat("95% CI of mean difference =", format(tt$conf.int, digits = 6), "\n")
+pyprint("Effect size d_z =", mean(diff_folds) / sd(diff_folds))
 
 # ================================
 # FINAL COMPARISON
